@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+      .box {
+        width: 400px;
+        height: 400px;
+        padding: 10px 5px;
+        margin-left: 5px;
+        border: 1px solid #000;
+        overflow: auto;
+      }
+      * {
+        margin: 0;
+        padding: 0
+      }
+      p {
+        margin: 5px 0;
+      }
+      input {
+        width: 340px;
+        padding: 5px;
+        margin: 10px 0 5px 5px;
+      }
+      button {
+        width: 50px;
+        height: 30px;
+        background-color: #fff;
+        outline: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" name="" value="">
+    <button type="button" name="button">发送</button>
+    <div class="box"></div>
+
+    <script>
+      const input = document.querySelector('input')
+      const btn = document.querySelector('button')
+      const box = document.querySelector('.box')
+
+      const socket = new WebSocket('ws://localhost:3000')
+
+      socket.onopen = function() {
+        alert('ws连接成功')
+      }
+
+      btn.onclick = function() {
+        const val = input.value
+        if (!val.trim()) return
+        socket.send(val)
+        input.value = ''
+      }
+
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data)
+        if (data.type === 'enter') {
+          box.innerHTML += `<p style="color: green;">${data.msg}</p>`
+        } else if (data.type === 'leave') {
+          box.innerHTML += `<p style="color: red;">${data.msg}</p>`
+        } else {
+          box.innerHTML += `<p>${data.msg}</p>`
+        }
+      }
+
+    </script>
+  </body>
+</html>
